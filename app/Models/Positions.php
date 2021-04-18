@@ -10,9 +10,9 @@ class Positions extends Model
     use HasFactory;
 
 
-    public $timestamps = false;
+    public $timestamps = true;
 
-    
+
     public function assign()
     {
         return $this->hasMany(Employees::Class);

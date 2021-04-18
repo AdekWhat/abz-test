@@ -24,7 +24,7 @@ class Employees extends Migration
               $table->longText('phone_number');
               $table->string('email');
               // TODO: change onDelete
-              $table->foreignId('head_id')->nullable()->unsigned()->constrained('employees')->change()->onDelete('cascade');
+              $table->foreignId('head_id')->nullable()->unsigned()->constrained('employees')->change();
               $table->double('salary', 11, 2);
               //$table->photo
               $table->string('image_url', 80)->nullable();
@@ -42,6 +42,6 @@ class Employees extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('employees');
     }
 }

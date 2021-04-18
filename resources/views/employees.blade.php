@@ -1,30 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Laravel</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css" />
-  <link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" rel="stylesheet">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
-  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-  <script src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
-
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" rel="stylesheet"/>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
-  <script src="https://rawgit.com/tempusdominus/bootstrap-4/master/build/js/tempusdominus-bootstrap-4.js"></script>
-  <link href="https://rawgit.com/tempusdominus/bootstrap-4/master/build/css/tempusdominus-bootstrap-4.css" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css"rel="stylesheet">
-</head>
+@extends('adminlte')
+@section('content')
 <body>
 
 <div class="container mt-5">
@@ -33,7 +8,7 @@
     <table class="table table-bordered yajra-datatable">
         <thead>
             <tr>
-                <th>No</th>
+                <th>Photo</th>
                 <th>Name</th>
                 <th>Position</th>
                 <th>Date of employment</th>
@@ -64,11 +39,14 @@
                 <form id="productForm" name="productForm" class="form-horizontal" enctype="multipart/form-data">
                     @csrf
                    <input type="hidden" name="employee_id" id="employee_id">
-                     <input type="hidden" name="position_id" id="position_id">
+
 
 
                       <div class="form-group">
                         <label for="image">Choose Image</label>
+                          <div id="avatar-image">
+                            <img src="" alt="" id="avatar">
+                          </div>
                         <input id="image" type="file" name="image" class="form-control" >
                       </div>
 
@@ -96,7 +74,8 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Position</label>
                         <div class="col-sm-12">
-                            <textarea id="position" name="position" required="" placeholder="Enter Position" class="form-control"></textarea>
+                            <input id="position" name="position" required="" placeholder="Enter Position" class="form-control"></input>
+
                         </div>
                     </div>
 
@@ -106,6 +85,15 @@
                             <textarea id="salary" name="salary" required="" placeholder="Enter Salary" class="form-control"></textarea>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Head</label>
+                        <div class="col-sm-12">
+                            <textarea id="head" name="head" required="" placeholder="" class="form-control" ></textarea>
+
+                        </div>
+                    </div>
+
 
                      <div class="form-group">
                         <label for="name" class="col-sm-2 control-label">Date Of Employment</label>
@@ -139,33 +127,16 @@
 
 </body>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
-<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+
+
+
+
 
 <script type="text/javascript">
 
 
 
-function getBase64Image(img) {
-  // Create an empty canvas element
-  var canvas = document.createElement("canvas");
-  canvas.width = img.width;
-  canvas.height = img.height;
 
-  // Copy the image contents to the canvas
-  var ctx = canvas.getContext("2d");
-  ctx.drawImage(img, 0, 0);
-
-  // Get the data-URL formatted image
-  // Firefox supports PNG and JPEG. You could check img.src to guess the
-  // original format, but be aware the using "image/jpg" will re-encode the image.
-  var dataURL = canvas.toDataURL("image/png");
-
-  return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-}
 
 
   $(function () {
@@ -175,7 +146,12 @@ function getBase64Image(img) {
         serverSide: true,
         ajax: "{{ route('employees.list') }}",
         columns: [
-            {data: 'id', name: 'id'},
+
+            {data: 'image_url', name: 'photo',
+            render: function( data, type, full, meta ) {
+                        return "<img src=\"" + data + "\" height=\"50\"  style=\"border-radius:50%\" \/>";
+                    }
+            },
             {data: 'full_name', name: 'full_name'},
             {data: 'name', name: 'name'},
             {data: 'employment_date', name: 'employment date'},
@@ -187,7 +163,8 @@ function getBase64Image(img) {
                 data: 'action',
                 name: 'action',
                 orderable: true,
-                searchable: true
+                searchable: true,
+
             },
 
         ]
@@ -197,6 +174,7 @@ function getBase64Image(img) {
 
   $('#createNewProduct').click(function () {
        $('#saveBtn').val("create-product");
+       $('#avatar').attr('src', '');
        $('#product_id').val('');
        $('#productForm').trigger("reset");
        // $('#productForm').data.reload();
@@ -209,19 +187,27 @@ function getBase64Image(img) {
        var employee_id = $(this).data('id');
        var url = '{{ route("employees.edit", ":id") }}';
        url = url.replace(":id", employee_id);
+
        $.get(url, function (data) {
+          console.log("boom",data.head_id );
            $('#modelHeading').html("Edit Product");
            $('#saveBtn').val("edit-user");
            $('#ajaxModel').modal('show');
-           $('#position_id').val(data.position);
+           $('#position_id').val(data.position_name);
            $('#employee_id').val(data.id);
            $('#full_name').val(data.full_name);
            $('#employment_date').val(data.employment_date);
-           $('#position').val(data.name);
+           $('#position').val(data.position_name);
            $('#phone_number').val(data.phone_number);
            $('#email').val(data.email);
            $('#salary').val(data.salary);
-
+           $('#avatar').attr('src', data.image_url);
+           if (data.hierarchy != 1)
+           {
+              $('#head').val(data.head_name);
+          }else{
+              $('#head').val('Top Manager'). attr('readonly', true);
+         };
        })
     });
 
@@ -231,13 +217,9 @@ function getBase64Image(img) {
       var form = $("#productForm");
       var data = new FormData();
       var files = $("#image").get(0).files;
-      if (files.length < 1){
-        files = null;
-        data.append("image", files);
-        }else{
-        data.append("image", files[0]);
-        }
-
+      if (files.length){
+      data.append("image", files[0]);
+      }
       $.each(form.serializeArray(), function (key, input) {
       data.append(input.name, input.value);
       });
@@ -297,13 +279,78 @@ function getBase64Image(img) {
 
    });
 
-   $(function() {
-        $('#datetimepicker1').datetimepicker();
     });
 
+   $('#position').autocomplete({
+    source: function( request, response ) {
+      // Fetch data
+      $.ajax({
+        url:"{{route('employees.autocomplete')}}",
+        type: 'post',
+        dataType: "json",
+        headers: {
+       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+     },
+        data: {
+           search: request.term
 
-  });
+        },
+        success: function( data ) {
+           response( data );
+                 }
+              });
+            },
+
+      select: function (event, ui) {
+           // Set selection
+
+        $('#position').val(ui.item.label); // display the selected text
+        $('#position_id').val(ui.item.value); // save selected id to input
+
+         return false;
+        }
+         });
+
+
+      $('#head').autocomplete({
+        source: function( request, response ) {
+          // Fetch data
+          $.ajax({
+            url:"{{route('employees.autocomplete')}}",
+            type: 'post',
+            dataType: "json",
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+           },
+              data: {
+                 search: request.term
+
+              },
+              success: function( data ) {
+                 response( data );
+                       }
+                    });
+                  },
+
+            select: function (event, ui) {
+                 // Set selection
+
+              $('#head').val(ui.item.label); // display the selected text
+            
+
+               return false;
+              }
+               });
+
+
+
+
+
+
+
+
 
 </script>
 
 </html>
+@endsection

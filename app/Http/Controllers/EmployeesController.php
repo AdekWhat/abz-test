@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use \App\Models\Employees;
+use \App\Models\Positions;
+use Arr;
 // use \App\Models\Positions;
 use DataTables;
 
@@ -23,9 +25,16 @@ class EmployeesController extends Controller
 
         if ($request->ajax()) {
             $data = Employees::employeesGet();
-            foreach ($data as $value){
-              $value->position = $value->name;
-            }
+
+            // foreach ($data as $value){
+            //   // $value->position = $value->name;
+            //   $head_key = array_search($value->head_id, array_column($data, 'id'));
+            //   $head_key = Arr::get($data, $head_key);
+            //   $value->head_name = $head_key->full_name;
+            //
+            //
+            //
+            // }
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -43,7 +52,7 @@ class EmployeesController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Product  $product
+     * @param  \App\Product  $id
      * @return \Illuminate\Http\Response
      */
     public function Edit($id)
@@ -55,46 +64,39 @@ class EmployeesController extends Controller
     public function Store(Request $request)
      {
 
-        //
-        // if   ($request->image == "undefined"){
-        //    // $request->image = File::get('storage/avatars/f8bhmaemsr8wnUJrZWUNyXj4eC8gt1BwzIrQMDaj.jpg');\
-        //   $request->image = null;
-        //    $request->position_id = 1;
-        // }
-
-        // dd($request);
 
         $validated = $request->validate([
-       'full_name' => 'required|string|max:255',
+       'full_name' => 'required|string|min:2|max:255',
        'position' => 'required',
        'employment_date' => 'required|before:today|after:1980-01-01',
        'phone_number' => 'required',
        'email' => 'required|email',
-       'salary' => 'required|int|max:50000',
-       'image' => 'mimes:jpg,png|max:1024|nullable',
+       'salary' => 'required|int|max:500000',
+       'image' => 'sometimes|mimes:jpg,png|max:5000',
         ]);
 
+        $position = Positions::where('name', $request->position)->first();
 
-       //     $validated = $request->validate([
-       // 'full_name' => 'required|max:255',
-       // 'email' => 'required',
-       //  ]);
-        // $head
+        $dataToUpdate = [
+        'full_name' => $request->full_name,
+        'position' => $position->id,
+         'employment_date' => $request->employment_date,
+         'phone_number' => $request->phone_number,
+         'email' => $request->email,
+         'salary' => $request->salary,
+       ];
+
         if ($request->image) {
         $url = Storage::put('public/avatars', $request->image);
-        }
+        $dataToUpdate['image_url'] = str_replace("public", "storage", $url );
+      }
+
 
 
          Employees::updateOrCreate(
                  ['id' => $request->employee_id],
-                 ['full_name' => $request->full_name,
-                 'position' => $request->position_id,
-                  'employment_date' => $request->employment_date,
-                  'phone_number' => $request->phone_number,
-                  'email' => $request->email,
-                  'image_url' => $url,
-                  'salary' => $request->salary,
-                ]);
+                 $dataToUpdate
+                 );
 
          return response()->json(['success'=>'Product saved successfully.']);
      }
@@ -106,6 +108,32 @@ class EmployeesController extends Controller
 
        return response()->json(['success'=>'Product deleted successfully.']);
      }
+
+
+     /*
+  AJAX request
+  */
+    public function Autocomplete (Request $request){
+      $search = $request->search;
+
+
+      if($search == ''){
+         $employees = Employees::orderby('full_name')->select('id','full_name')->limit(5)->get();
+      }else{
+         $employees = Employees::orderby('full_name')->select('id','full_name')->where('full_name', 'like', '%' .$search . '%')->limit(5)->get();
+      }
+
+      $response = array();
+      foreach($employees as $employee){
+         $response[] = array("value"=>$employee->id,"label"=>$employee->full_name);
+      }
+
+      return response()->json($response);
+
+
+
+    }
+
 
 
 }
