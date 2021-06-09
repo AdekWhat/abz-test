@@ -37,9 +37,8 @@ class EmployeesFactory extends Factory
         return [
 
             'full_name' => $this->faker->name(),
-            // 'position' => $this->faker->numberBetween(1, \App\Models\Positions::count()),
             'position' =>$this->faker->randomElement($position),
-            'employment_date' => $this->faker->datedate(),
+            'employment_date' => $this->faker->date(),
             'hierarchy' => $hierarchy,
             'head_id' =>  $head,
             'phone_number' => $this->faker->e164PhoneNumber(),

@@ -17,16 +17,12 @@ class Employees extends Migration
               $table->id();
               $table->string('full_name');
               $table->foreignId('position')->constrained('positions')->onDelete('cascade');
-              // $table->foreign('user_id')->references('id')->on('positions')->onDelete('cascade');
-              $table->timestamp('employment_date');
+              $table->date('employment_date');
               $table->smallInteger('hierarchy');
-              // todo change phone number
               $table->longText('phone_number');
               $table->string('email');
-              // TODO: change onDelete
               $table->foreignId('head_id')->nullable()->unsigned()->constrained('employees')->change();
               $table->double('salary', 11, 2);
-              //$table->photo
               $table->string('image_url', 80)->nullable();
               $table->timestamps();
           });

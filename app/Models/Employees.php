@@ -45,8 +45,11 @@ class Employees extends Model
             Employees::where('id', $subordinate)->update(['head_id'=>$new_head]);
           }
 
-
       });
+
+
+
+
   }
 
 
@@ -91,7 +94,8 @@ class Employees extends Model
         'position',
         'email',
         'salary',
-        'head_id'
+        'head_id',
+        'hierarchy'
     ];
 
     /**

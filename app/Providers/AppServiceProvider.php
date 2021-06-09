@@ -4,6 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
+use App\Observers\EmployeesObserver;
+
+use App\Models\Employees;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,6 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Employees::observe(EmployeesObserver::class);
     }
 }
