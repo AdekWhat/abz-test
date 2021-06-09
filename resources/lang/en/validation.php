@@ -118,7 +118,7 @@ return [
     'uploaded' => 'The :attribute failed to upload.',
     'url' => 'The :attribute format is invalid.',
     'uuid' => 'The :attribute must be a valid UUID.',
-
+    'phone' => 'The :attribute field must contains a valid ukranian number.',
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines
@@ -133,6 +133,7 @@ return [
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
+            'validation.phone' => 'do you speak',
         ],
     ],
 

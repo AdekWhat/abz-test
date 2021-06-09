@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use \App\Models\Employees;
 use \App\Models\Positions;
+use Intervention\Image\Facades\Image;
 use Arr;
+use Propaganistas\LaravelPhone\PhoneNumber;
 // use \App\Models\Positions;
 use DataTables;
 
@@ -26,15 +28,7 @@ class EmployeesController extends Controller
         if ($request->ajax()) {
             $data = Employees::employeesGet();
 
-            // foreach ($data as $value){
-            //   // $value->position = $value->name;
-            //   $head_key = array_search($value->head_id, array_column($data, 'id'));
-            //   $head_key = Arr::get($data, $head_key);
-            //   $value->head_name = $head_key->full_name;
-            //
-            //
-            //
-            // }
+
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function($row){
@@ -67,28 +61,45 @@ class EmployeesController extends Controller
 
         $validated = $request->validate([
        'full_name' => 'required|string|min:2|max:255',
-       'position' => 'required',
+       'position' => 'required|exists:positions,name',
        'employment_date' => 'required|before:today|after:1980-01-01',
-       'phone_number' => 'required',
+       'phone_number' => 'required|phone:UA',
        'email' => 'required|email',
        'salary' => 'required|int|max:500000',
-       'image' => 'sometimes|mimes:jpg,png|max:5000',
+       'image' => 'sometimes|mimes:jpg,png|max:5000|dimensions:min_width=300,min_height=300',
+       'head' => 'exists:employees,full_name',
+
         ]);
 
         $position = Positions::where('name', $request->position)->first();
+        $head = Employees::where('full_name', $request->head)->first();
+        $E164_phone =  PhoneNumber::make($request->phone_number, 'UA' )->formatE164();
+
+        if ($head->hierarchy == 5)
+            return response()->json(["message" => "The given data was invalid.","errors" => ["head" => ["Employee that you choose not qualified"]]], 422);
+
 
         $dataToUpdate = [
         'full_name' => $request->full_name,
         'position' => $position->id,
          'employment_date' => $request->employment_date,
-         'phone_number' => $request->phone_number,
+         'phone_number' => $E164_phone,
          'email' => $request->email,
          'salary' => $request->salary,
+         'head_id' => $head->id,
+         'hierarchy' => $head->hierarchy + 1
+
        ];
 
         if ($request->image) {
         $url = Storage::put('public/avatars', $request->image);
-        $dataToUpdate['image_url'] = str_replace("public", "storage", $url );
+        $imagePath = str_replace("public", "storage", $url );
+        $image = Image::make(public_path("{$imagePath}"))->fit(300, 300);
+        $image = $image->orientate(); // exif orientation
+        $image->save();
+
+        $dataToUpdate['image_url'] = $imagePath;
+
       }
 
 
@@ -118,11 +129,10 @@ class EmployeesController extends Controller
 
 
       if($search == ''){
-         $employees = Employees::orderby('full_name')->select('id','full_name')->limit(5)->get();
+         $employees = Employees::orderby('full_name')->select('id','full_name')->where('hierarchy','<', 5)->limit(5)->get();
       }else{
-         $employees = Employees::orderby('full_name')->select('id','full_name')->where('full_name', 'like', '%' .$search . '%')->limit(5)->get();
+         $employees = Employees::orderby('full_name')->select('id','full_name')->where('full_name', 'like', '%' .$search . '%' )->where('hierarchy','<', 5)->limit(5)->get();
       }
-
       $response = array();
       foreach($employees as $employee){
          $response[] = array("value"=>$employee->id,"label"=>$employee->full_name);

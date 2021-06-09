@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\Employees;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Carbon\Carbon;
+use Propaganistas\LaravelPhone\PhoneNumber;
+
 class EmployeesFactory extends Factory
 {
     /**
@@ -31,16 +33,16 @@ class EmployeesFactory extends Factory
       }else{
           $head = null;
       }
-    
+
         return [
 
             'full_name' => $this->faker->name(),
             // 'position' => $this->faker->numberBetween(1, \App\Models\Positions::count()),
             'position' =>$this->faker->randomElement($position),
-            'employment_date' => $this->faker->dateTimeBetween('-2 months', '-1 days'),
+            'employment_date' => $this->faker->datedate(),
             'hierarchy' => $hierarchy,
             'head_id' =>  $head,
-            'phone_number' => $this->faker->tollFreePhoneNumber(),
+            'phone_number' => $this->faker->e164PhoneNumber(),
             'email' => $this->faker->email(),
             'salary' => mt_rand(1000,100000),
 
@@ -49,4 +51,19 @@ class EmployeesFactory extends Factory
 
         ];
     }
+
+    //  Try to develop binary tree
+    // public function tresTree()
+    // {
+    //   if Employees.count < 1 :
+    //     set first employee
+    //   func dfs($db_copy, start_emp_id, visited_arr)
+    //   {
+    //
+    //   }
+    //
+    //
+    //
+    // }
+
 }

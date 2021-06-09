@@ -41,6 +41,12 @@ class PositionsController extends Controller
 
     }
 
+    public function Edit($id)
+    {
+        $position_id = Positions::where('id',$id)->get();
+        return response()->json($position_id[0]);
+    }
+
     public function Autocomplete(Request $request)
     {
         $search = $request->search;
@@ -59,5 +65,35 @@ class PositionsController extends Controller
         return response()->json($response);
 
     }
+
+
+    public function Store(Request $request)
+     {
+
+
+        $validated = $request->validate([
+          'name' => 'required|string|min:2|max:255',
+
+        ]);
+
+
+         Positions::updateOrCreate(
+                 ['id' => $request->position_id],
+                  [ 'name' => $request->name],
+                 );
+
+
+
+         return response()->json(['success'=>'Product saved successfully.']);
+     }
+
+
+
+     public function Delete($id)
+     {
+       Positions::find($id)->delete();
+
+       return response()->json(['success'=>'Product deleted successfully.']);
+     }
 
   }

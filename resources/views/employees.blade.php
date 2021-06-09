@@ -2,7 +2,7 @@
 @section('content')
 <body>
 
-<div class="container mt-5">
+<div class="container  mt-5" style="width:100%; max-width:100%">
     <h2 class="mb-4">Employees</h2>
      <a class="btn btn-success" href="javascript:void(0)" id="createNewProduct"> Create New Product</a>
     <table class="table table-bordered yajra-datatable">
@@ -103,18 +103,6 @@
                         </div>
                     </div>
 
-                    <!-- <div class="form-group">
-                        <div class='col-sm-6'>
-                            <div class='input-group date' id='datetimepicker1'>
-                                <input type='text' class="form-control" />
-                                    <span class="input-group-addon">
-                                          <span class="glyphicon glyphicon-calendar"></span>
-                                      </span>
-                            </div>
-                      </div>
-                  </div> -->
-
-
                     <div class="col-sm-offset-2 col-sm-10">
                      <button type="submit" class="btn btn-primary" id="saveBtn" value="create">Save changes
                      </button>
@@ -140,7 +128,6 @@
 
 
   $(function () {
-    // $('.edit').click(() => {console.log("boom")})
     var table = $('.yajra-datatable').DataTable({
         processing: true,
         serverSide: true,
@@ -184,6 +171,8 @@
 
 
   $('body').on('click', '.editProduct', function () {
+        $('.alert-danger').hide()
+
        var employee_id = $(this).data('id');
        var url = '{{ route("employees.edit", ":id") }}';
        url = url.replace(":id", employee_id);
@@ -245,7 +234,7 @@
               $.each(response.errors, function(key, value) {
                           console.log('Error:', response.errors);
                            $('.alert-danger').show();
-                           $('.alert-danger').append('<strong><li>'+value+'</li></strong>');
+                           $('.alert-danger').append('<strong><li>'+value+'</li></strong></div>');
                        });
 
              $('#saveBtn').html('Save Changes');
@@ -285,7 +274,7 @@
     source: function( request, response ) {
       // Fetch data
       $.ajax({
-        url:"{{route('employees.autocomplete')}}",
+        url:"{{route('positions.autocomplete')}}",
         type: 'post',
         dataType: "json",
         headers: {
@@ -336,12 +325,16 @@
                  // Set selection
 
               $('#head').val(ui.item.label); // display the selected text
-            
+
 
                return false;
               }
                });
 
+
+          $(function() {
+            $( "#employment_date" ).datepicker();
+          });
 
 
 

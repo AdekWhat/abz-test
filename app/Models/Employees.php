@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
+
+
 
 class Employees extends Model
 {
@@ -41,7 +44,6 @@ class Employees extends Model
 
             Employees::where('id', $subordinate)->update(['head_id'=>$new_head]);
           }
-          dd("stop");
 
 
       });
@@ -89,6 +91,7 @@ class Employees extends Model
         'position',
         'email',
         'salary',
+        'head_id'
     ];
 
     /**
@@ -98,7 +101,9 @@ class Employees extends Model
       'position',
     ];
 
-
+    // public $casts = [
+    //     'phone' =>  E164PhoneNumberCast::class.':UA',
+    // ];
 
 
 }
